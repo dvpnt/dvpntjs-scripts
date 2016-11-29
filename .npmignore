@@ -1,0 +1,5 @@
+*.log
+.eslintrc.json
+.eslintignore
+.npmignore
+.gitignore

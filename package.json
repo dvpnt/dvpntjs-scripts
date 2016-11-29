@@ -1,0 +1,21 @@
+{
+  "name": "dvpnt-scripts",
+  "version": "0.0.1",
+  "description": "dvpnt node helpers scripts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dvpnt/node-scripts.git"
+  },
+  "author": "Aleksey Timchenko <flegmatik.bel@gmail.com>",
+  "scripts": {
+    "lint": "eslint ./"
+  },
+  "dependencies": {
+    "commander": "2.9.0"
+  },
+  "devDependencies": {
+    "eslint": "3.5.0",
+    "eslint-config-dvpnt": "1.2.0"
+  }
+}
