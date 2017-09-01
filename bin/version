@@ -6,17 +6,6 @@ var program = require('commander'),
 	version = require('../lib/version');
 
 program
-	.command('bump-static')
-	.description('bump static version')
-	.option('--static-path [path]', 'path to static folder', 'static')
-	.action(function(cmd) {
-		version.checkCwd();
-		version.bumpStatic({
-			path: cmd.staticPath
-		});
-	});
-
-program
 	.command('bump-alpha')
 	.description('bump alpha version')
 	.option('--suffix [suffix]', 'alpha suffix', 'alpha')
@@ -42,17 +31,8 @@ program
 	.command('alpha')
 	.description('alpha release')
 	.option('--suffix [suffix]', 'alpha suffix', 'alpha')
-	.option('--bump-static', 'also bump static version', false)
-	.option('--static-path [path]', 'path to static folder', 'static')
 	.action(function(cmd) {
 		version.checkCwd();
-
-		if (cmd.bumpStatic) {
-			version.bumpStatic({
-				path: cmd.staticPath
-			});
-		}
-
 		version.bumpAlpha({suffix: cmd.suffix});
 	});
 
@@ -60,18 +40,9 @@ program
 	.command('release')
 	.description('release')
 	.option('--bump [bump]', 'patch, minor or major', 'patch')
-	.option('--bump-static', 'also bump static version', false)
-	.option('--static-path [path]', 'path to static folder', 'static')
 	.option('--tag', 'create tag', false)
 	.action(function(cmd) {
 		version.checkCwd();
-
-		if (cmd.bumpStatic) {
-			version.bumpStatic({
-				path: cmd.staticPath
-			});
-		}
-
 		version.bumpRelease({bump: cmd.bump});
 
 		if (cmd.tag) {
