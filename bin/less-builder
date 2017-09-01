@@ -1,0 +1,112 @@
+#!/usr/bin/env node
+
+const _ = require('underscore');
+const onExit = require('signal-exit');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const {spawn} = require('child_process');
+const logger = require('../lib/logger')('less builder');
+
+let config;
+
+try {
+	config = require(path.join(process.cwd(), 'less-builder.config'));
+} catch (err) {
+	logger.error('config not found');
+	process.exit(-1);
+}
+
+const pidPath = path.join(process.cwd(), 'less-builder.pid');
+const exitCodes = [];
+const stats = {};
+const pids = [];
+
+try {
+	const oldPid = fs.readFileSync(pidPath, 'utf8');
+	if (oldPid) {
+		logger.warn('terminate already running compilation');
+		process.kill(Number(oldPid), 'SIGTERM');
+	}
+} catch (err) {
+	if (err.code !== 'ENOENT' && err.code !== 'ESRCH') {
+		logger.error(err);
+	}
+}
+
+fs.writeFileSync(pidPath, process.pid.toString());
+
+onExit(function() {
+	_(pids).each(function(pid) {
+		try {
+			process.kill(pid, 'SIGTERM');
+		} catch (err) {
+			if (err.code !== 'ESRCH') {
+				logger.error(err);
+			}
+		}
+	});
+
+	try {
+		fs.unlinkSync(pidPath);
+	} catch (err) {}
+});
+
+if (_(config.entry).isEmpty()) {
+	logger.error('file names required');
+	process.exit(-1);
+}
+
+var lesscExit = _.after(_(config.entry).size(), function() {
+	const success = _(exitCodes).every(function(code) {
+		return code === 0;
+	});
+
+	if (success) {
+		if (config.stats) {
+			fs.writeFileSync(
+				path.join(config.output.path, 'stats.json'),
+				JSON.stringify(stats, null, 2)
+			);
+		}
+
+		logger.log('all files successfully compiled');
+		process.exit(0);
+	} else {
+		logger.error('compilation failed');
+		process.exit(-1);
+	}
+});
+
+_(config.entry).each(function(filePath, name) {
+	const args = [filePath].concat(_(config.args).compact());
+
+	logger.log('compile %s', filePath);
+
+	const child = spawn('lessc', args, {
+		stdio: ['ignore', 'pipe', 'inherit']
+	});
+
+	const outputStream = fs.createWriteStream(
+		path.join(config.output.path, name + '.css')
+	);
+
+	const hash = crypto.createHash('md5');
+
+	child.stdout.on('data', function(data) {
+		hash.update(data);
+		outputStream.write(data);
+	});
+
+	child.on('close', function(code) {
+		outputStream.end();
+		exitCodes.push(code);
+		stats[name] = {
+			file: name + '.css',
+			hash: hash.digest('hex')
+		};
+		lesscExit();
+	});
+
+	pids.push(child.pid);
+});
