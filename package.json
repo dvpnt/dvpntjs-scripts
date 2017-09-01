@@ -9,7 +9,8 @@
   },
   "bin": {
     "version": "./bin/version",
-    "lint-migrations": "./bin/lint-migrations"
+    "lint-migrations": "./bin/lint-migrations",
+    "prevent-release-rewrite": "./bin/prevent-release-rewrite"
   },
   "author": "Aleksey Timchenko <flegmatik.bel@gmail.com>",
   "scripts": {
