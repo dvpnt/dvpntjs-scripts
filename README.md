@@ -1,4 +1,4 @@
-# node-scripts
-[![NPM Version](https://img.shields.io/npm/v/dvpnt-scripts.svg)](https://www.npmjs.com/package/dvpnt-scripts)
+# dvpntjs-scripts
+[![NPM Version](https://img.shields.io/npm/v/dvpntjs-scripts.svg)](https://www.npmjs.com/package/dvpntjs-scripts)
 
 dvpnt node helper scripts

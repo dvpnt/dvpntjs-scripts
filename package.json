@@ -1,11 +1,11 @@
 {
-  "name": "dvpnt-scripts",
+  "name": "dvpntjs-scripts",
   "version": "1.0.2",
   "description": "dvpnt node helper scripts",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dvpnt/node-scripts.git"
+    "url": "https://github.com/dvpnt/dvpntjs-scripts.git"
   },
   "bin": {
     "version": "./bin/version"
