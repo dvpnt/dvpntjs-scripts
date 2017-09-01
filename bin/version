@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
-'use strict';
-
-var program = require('commander'),
-	version = require('../lib/version');
+const program = require('commander');
+const version = require('../lib/version');
 
 program
 	.command('bump-alpha')

@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+
+const _ = require('underscore');
+const fs = require('fs');
+const path = require('path');
+const logger = require('../lib/logger')('lint migrations');
+
+const errors = [];
+const migrationsPath = path.resolve('migrations');
+
+const migrations = _(fs.readdirSync(migrationsPath)).filter(function(name) {
+	return name.match(/^\d+_\w+\.js$/);
+});
+
+function checkEmptyTags() {
+	_(migrations).each(function(name) {
+		const migration = require(path.join(migrationsPath, name));
+		if (_(migration.tags).isEmpty()) {
+			errors.push('empty tags in ' + name);
+		}
+	});
+}
+
+function checkDups() {
+	_(migrations).chain().groupBy(function(name) {
+		return name.match(/^(\d+)/)[1];
+	}).each(function(names) {
+		if (names.length > 1) {
+			errors.push('duplicated numbers: ' + names.join(', '));
+		}
+	});
+}
+
+function checkGaps() {
+	const migrationNumbers = _(migrations).map(function(name) {
+		return Number(name.match(/^(\d+)/)[1]);
+	});
+	const expectedNumbers = _.range(1, migrations.length + 1);
+	const diff = _.difference(migrationNumbers, expectedNumbers);
+	const expectedDiff = _.difference(expectedNumbers, migrationNumbers);
+
+	if (!_(diff).isEmpty()) {
+		errors.push('gap in numbers: ' + diff.join(', '));
+		errors.push('expected numbers: ' + expectedDiff.join(', '));
+	}
+}
+
+checkEmptyTags();
+checkDups();
+checkGaps();
+
+_(errors).each(function(error) {
+	logger.error(error);
+});
+
+process.exit(errors.length > 0 ? -1 : 0);

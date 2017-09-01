@@ -8,7 +8,8 @@
     "url": "https://github.com/dvpnt/dvpntjs-scripts.git"
   },
   "bin": {
-    "version": "./bin/version"
+    "version": "./bin/version",
+    "lint-migrations": "./bin/lint-migrations"
   },
   "author": "Aleksey Timchenko <flegmatik.bel@gmail.com>",
   "scripts": {
@@ -21,8 +22,8 @@
     "underscore": "1.8.3"
   },
   "devDependencies": {
-    "eslint": "3.5.0",
-    "eslint-config-dvpnt": "1.2.0",
+    "eslint": "4.5.0",
+    "eslint-config-dvpnt": "2.0.0",
     "nrun": "0.1.7"
   }
 }
