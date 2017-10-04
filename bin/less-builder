@@ -57,7 +57,7 @@ if (_(config.entry).isEmpty()) {
 	process.exit(-1);
 }
 
-var lesscExit = _.after(_(config.entry).size(), function() {
+const lesscExit = _.after(_(config.entry).size(), function() {
 	const success = _(exitCodes).every(function(code) {
 		return code === 0;
 	});
