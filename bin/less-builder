@@ -36,8 +36,8 @@ try {
 
 fs.writeFileSync(pidPath, process.pid.toString());
 
-onExit(function() {
-	_(pids).each(function(pid) {
+onExit(() => {
+	_(pids).each((pid) => {
 		try {
 			process.kill(pid, 'SIGTERM');
 		} catch (err) {
@@ -57,12 +57,8 @@ if (_(config.entry).isEmpty()) {
 	process.exit(-1);
 }
 
-const lesscExit = _.after(_(config.entry).size(), function() {
-	const success = _(exitCodes).every(function(code) {
-		return code === 0;
-	});
-
-	if (success) {
+const lesscExit = _.after(_(config.entry).size(), () => {
+	if (_(exitCodes).every((code) => code === 0)) {
 		if (config.stats) {
 			fs.writeFileSync(
 				path.join(config.output.path, 'stats.json'),
@@ -78,7 +74,7 @@ const lesscExit = _.after(_(config.entry).size(), function() {
 	}
 });
 
-_(config.entry).each(function(filePath, name) {
+_(config.entry).each((filePath, name) => {
 	const args = [filePath].concat(_(config.args).compact());
 
 	logger.log('compile %s', filePath);
@@ -93,12 +89,12 @@ _(config.entry).each(function(filePath, name) {
 
 	const hash = crypto.createHash('md5');
 
-	child.stdout.on('data', function(data) {
+	child.stdout.on('data', (data) => {
 		hash.update(data);
 		outputStream.write(data);
 	});
 
-	child.on('close', function(code) {
+	child.on('close', (code) => {
 		outputStream.end();
 		exitCodes.push(code);
 		stats[name] = {

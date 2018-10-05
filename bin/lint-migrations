@@ -8,12 +8,11 @@ const logger = require('../lib/logger')('lint migrations');
 const errors = [];
 const migrationsPath = path.resolve(process.argv.slice(2)[0] || 'migrations');
 
-const migrations = _(fs.readdirSync(migrationsPath)).filter(function(name) {
-	return name.match(/^\d+_\w+\.js$/);
-});
+const migrations = _(fs.readdirSync(migrationsPath))
+	.filter((name) => name.match(/^\d+_\w+\.js$/));
 
 function checkEmptyTags() {
-	_(migrations).each(function(name) {
+	_(migrations).each((name) => {
 		const migration = require(path.join(migrationsPath, name));
 		if (_(migration.tags).isEmpty()) {
 			errors.push('empty tags in ' + name);
@@ -22,19 +21,18 @@ function checkEmptyTags() {
 }
 
 function checkDups() {
-	_(migrations).chain().groupBy(function(name) {
-		return name.match(/^(\d+)/)[1];
-	}).each(function(names) {
-		if (names.length > 1) {
-			errors.push('duplicated numbers: ' + names.join(', '));
-		}
-	});
+	_(migrations).chain()
+		.groupBy((name) => name.match(/^(\d+)/)[1])
+		.each((names) => {
+			if (names.length > 1) {
+				errors.push('duplicated numbers: ' + names.join(', '));
+			}
+		});
 }
 
 function checkGaps() {
-	const migrationNumbers = _(migrations).map(function(name) {
-		return Number(name.match(/^(\d+)/)[1]);
-	});
+	const migrationNumbers = _(migrations)
+		.map((name) => Number(name.match(/^(\d+)/)[1]));
 	const expectedNumbers = _.range(1, migrations.length + 1);
 	const diff = _.difference(migrationNumbers, expectedNumbers);
 	const expectedDiff = _.difference(expectedNumbers, migrationNumbers);
@@ -49,7 +47,7 @@ checkEmptyTags();
 checkDups();
 checkGaps();
 
-_(errors).each(function(error) {
+_(errors).each((error) => {
 	logger.error(error);
 });
 
