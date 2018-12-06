@@ -49,7 +49,11 @@ onExit(() => {
 
 	try {
 		fs.unlinkSync(pidPath);
-	} catch (err) {}
+	} catch (err) {
+		if (err.code !== 'ENOENT') {
+			logger.error(err);
+		}
+	}
 });
 
 if (_(config.entry).isEmpty()) {
