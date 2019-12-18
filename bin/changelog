@@ -12,21 +12,21 @@ if (!version) {
 	process.exit(-1);
 }
 
-const changelog = fs.readFileSync('CHANGELOG.md', 'utf8')
-	.replace(/\n{3,}/g, '\n');
-const rows = changelog.split('\n');
-
+const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+const rows = changelog.replace(/\n{3,}/g, '\n').split('\n');
 const header = [];
 const unreleased = [];
 const rest = [];
 const links = [];
 
+function ish2(row) {
+	row.startsWith('## ');
+}
+
 _(rows).each((row) => {
-	if (!/^##/.test(row) && _(unreleased).isEmpty()) {
+	if (!ish2(row) && _(unreleased).isEmpty()) {
 		header.push(row);
-	} else if (/^## \[Unreleased\]$/.test(row) && _(rest).isEmpty()) {
-		unreleased.push(row);
-	} else if (!/^## /.test(row) && _(rest).isEmpty()) {
+	} else if ((row === '## [Unreleased]' || !ish2(row)) && _(rest).isEmpty()) {
 		unreleased.push(row);
 	} else if (!/^\[/.test(row) && _(links).isEmpty()) {
 		rest.push(row);
