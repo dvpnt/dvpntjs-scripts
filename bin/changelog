@@ -20,15 +20,15 @@ const rest = [];
 const links = [];
 
 function ish2(row) {
-	row.startsWith('## ');
+	return row.startsWith('## ');
 }
 
 _(rows).each((row) => {
 	if (!ish2(row) && _(unreleased).isEmpty()) {
 		header.push(row);
-	} else if ((row === '## [Unreleased]\n' || !ish2(row)) && _(rest).isEmpty()) {
+	} else if ((row === '## [Unreleased]' || !ish2(row)) && _(rest).isEmpty()) {
 		unreleased.push(row);
-	} else if (!/^\[/.test(row) && _(links).isEmpty()) {
+	} else if (!row.startsWith('[') && _(links).isEmpty()) {
 		rest.push(row);
 	} else {
 		links.push(row);
