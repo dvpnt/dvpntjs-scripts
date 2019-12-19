@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+const _ = require('underscore');
+const fs = require('fs');
+const exec = require('../lib/exec');
+const logger = require('../lib/logger')('changelog');
+
+const version = process.env.VERSION;
+
+if (!version) {
+	logger.error('VERSION variable is absent');
+	process.exit(-1);
+}
+
+const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+const rows = changelog.replace(/\n{3,}/g, '\n').split('\n');
+const header = [];
+const unreleased = [];
+const rest = [];
+const links = [];
+
+function ish2(row) {
+	row.startsWith('## ');
+}
+
+_(rows).each((row) => {
+	if (!ish2(row) && _(unreleased).isEmpty()) {
+		header.push(row);
+	} else if ((row === '## [Unreleased]' || !ish2(row)) && _(rest).isEmpty()) {
+		unreleased.push(row);
+	} else if (!/^\[/.test(row) && _(links).isEmpty()) {
+		rest.push(row);
+	} else {
+		links.push(row);
+	}
+});
+
+if (_(unreleased).size() < 2) {
+	logger.error('empty unreleased block');
+	process.exit(-1);
+}
+
+const date = new Date().toISOString().split('T')[0];
+const prevVersion = links[1].match(/^\[(.+)\]/)[1];
+const oldUnreleasedLink = links[0];
+
+unreleased[0] = `## [${version}] - ${date}`;
+links[0] = links[0]
+	.replace(/^\[Unreleased\]/, `[${version}]`)
+	.replace(/HEAD$/, `v${version}`);
+
+const newChangelog = [
+	...header,
+	'',
+	'## [Unreleased]',
+	'',
+	...unreleased,
+	...rest,
+	'',
+	oldUnreleasedLink.replace(prevVersion, version),
+	...links
+].join('\n');
+
+fs.writeFileSync('CHANGELOG.md', newChangelog);
+
+exec('git add -A CHANGELOG.md');
+exec('git commit --no-verify -m \'update changelog\'');
