@@ -19,11 +19,11 @@
     "lint": "eslint ./ ./bin/*"
   },
   "dependencies": {
-    "chalk": "^4.0.0",
-    "commander": "^5.1.0",
-    "semver": "^7.3.2",
-    "signal-exit": "^3.0.3",
-    "underscore": "^1.10.2"
+    "chalk": "4.0.0",
+    "commander": "5.1.0",
+    "semver": "7.3.2",
+    "signal-exit": "3.0.3",
+    "underscore": "1.10.2"
   },
   "devDependencies": {
     "eslint": "5.7.0",
