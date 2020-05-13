@@ -12,7 +12,8 @@
     "lint-migrations": "./bin/lint-migrations",
     "prevent-release-rewrite": "./bin/prevent-release-rewrite",
     "less-builder": "./bin/less-builder",
-    "changelog": "./bin/changelog"
+    "changelog": "./bin/changelog",
+    "db": "./bin/db"
   },
   "author": "Aleksey Timchenko <flegmatik.bel@gmail.com>",
   "scripts": {
