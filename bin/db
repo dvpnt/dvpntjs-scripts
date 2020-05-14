@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const {program} = require('commander');
+const {drop, restore} = require('../lib/db');
+
+program
+	.command('drop')
+	.description('drop database')
+	.option('--dburl <url>')
+	.action(({dburl}) => {
+		drop(dburl);
+	});
+
+program
+	.command('restore')
+	.description('restore database')
+	.option('--dburl <url>')
+	.option('--source <source>', 'local file or http link')
+	.action(({dburl, source}) => {
+		restore({dbUrl: dburl, source});
+	});
+
+program.parse(process.argv);
+
+if (!program.args.length) {
+	program.help();
+}
