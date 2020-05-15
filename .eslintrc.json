@@ -1,3 +1,4 @@
 {
-	"extends": "dvpnt"
+	"extends": "dvpnt",
+	"parser": "babel-eslint"
 }
