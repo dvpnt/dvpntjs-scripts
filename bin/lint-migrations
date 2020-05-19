@@ -45,7 +45,8 @@ function checkGaps() {
 	}
 }
 
-checkEmptyTags().then(() => {
+async function main() {
+	await checkEmptyTags();
 	checkDups();
 	checkGaps();
 
@@ -54,4 +55,6 @@ checkEmptyTags().then(() => {
 	});
 
 	process.exit(errors.length > 0 ? -1 : 0);
-});
+}
+
+main();
