@@ -12,12 +12,14 @@ const migrations = _(fs.readdirSync(migrationsPath))
 	.filter((name) => name.match(/^\d+_\w+\.js$/));
 
 function checkEmptyTags() {
-	_(migrations).each((name) => {
-		const migration = require(path.join(migrationsPath, name));
+	return Promise.all(_(migrations).map(async (name) => {
+		const importedModule = await import(path.join(migrationsPath, name));
+		const migration = importedModule.default || importedModule;
+
 		if (_(migration.tags).isEmpty()) {
 			errors.push('empty tags in ' + name);
 		}
-	});
+	}));
 }
 
 function checkDups() {
@@ -43,12 +45,16 @@ function checkGaps() {
 	}
 }
 
-checkEmptyTags();
-checkDups();
-checkGaps();
+async function main() {
+	await checkEmptyTags();
+	checkDups();
+	checkGaps();
 
-_(errors).each((error) => {
-	logger.error(error);
-});
+	_(errors).each((error) => {
+		logger.error(error);
+	});
 
-process.exit(errors.length > 0 ? -1 : 0);
+	process.exit(errors.length > 0 ? -1 : 0);
+}
+
+main();
