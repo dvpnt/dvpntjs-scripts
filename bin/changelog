@@ -45,8 +45,8 @@ if (_(unreleased).size() < 2) {
 }
 
 const date = new Date().toISOString().split('T')[0];
-const versionRange = _(links[0].split('/')).last();
-const prevVersion = versionRange.match(/(.+)\.{3}(.+)/)[1];
+const currentVersionRange = _(links[0].split('/')).last();
+const prevVersion = currentVersionRange.match(/(.+)\.{3}(.+)/)[1];
 const oldUnreleasedLink = links[0];
 
 unreleased[0] = `## [${version}] - ${date}`;
@@ -63,7 +63,7 @@ const newChangelog = [
 	'',
 	...rest,
 	'',
-	oldUnreleasedLink.replace(prevVersion, version),
+	oldUnreleasedLink.replace(prevVersion, `v${version}`),
 	...links
 ].join('\n');
 
