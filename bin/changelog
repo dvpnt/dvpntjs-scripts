@@ -13,20 +13,24 @@ if (!version) {
 }
 
 const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
-const rows = changelog.replace(/\n{3,}/g, '\n').split('\n');
+const rows = changelog.replace(/\n{2,}/g, '\n').split('\n');
 const header = [];
 const unreleased = [];
 const rest = [];
 const links = [];
 
-function ish2(row) {
+function isH2(row) {
 	return row.startsWith('## ');
 }
 
 _(rows).each((row) => {
-	if (!ish2(row) && _(unreleased).isEmpty()) {
+	if (!isH2(row) && _(unreleased).isEmpty()) {
 		header.push(row);
-	} else if ((row === '## [Unreleased]' || !ish2(row)) && _(rest).isEmpty()) {
+	} else if (
+		(row === '## [Unreleased]' || !isH2(row)) &&
+		_(rest).isEmpty() &&
+		!row.startsWith('[')
+	) {
 		unreleased.push(row);
 	} else if (!row.startsWith('[') && _(links).isEmpty()) {
 		rest.push(row);
@@ -41,7 +45,8 @@ if (_(unreleased).size() < 2) {
 }
 
 const date = new Date().toISOString().split('T')[0];
-const prevVersion = links[1].match(/^\[(.+)\]/)[1];
+const versionRange = _(links[0].split('/')).last();
+const prevVersion = versionRange.match(/(.+)\.{3}(.+)/)[1];
 const oldUnreleasedLink = links[0];
 
 unreleased[0] = `## [${version}] - ${date}`;
@@ -55,6 +60,7 @@ const newChangelog = [
 	'## [Unreleased]',
 	'',
 	...unreleased,
+	'',
 	...rest,
 	'',
 	oldUnreleasedLink.replace(prevVersion, version),
