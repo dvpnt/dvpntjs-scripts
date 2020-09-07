@@ -51,4 +51,4 @@ _(errors).each((error) => {
 	logger.error(error);
 });
 
-process.exit(errors.length > 0 ? -1 : 0);
+process.exit(errors.length && -1);

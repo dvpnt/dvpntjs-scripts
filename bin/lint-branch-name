@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+
+const _ = require('underscore');
+const {execSync} = require('child_process');
+const logger = require('../lib/logger')('lint branch name');
+
+const branchName = execSync('git rev-parse --abbrev-ref HEAD')
+	.toString()
+	.replace('\n', '');
+let exitCode = 0;
+
+if (!_(['development', 'master']).contains(branchName)) {
+	_([
+		[
+			/^(?:feature|fix|experiment)\/.*$/,
+			'Branch name should start with feature/ or fix/ or experiment/'
+		],
+		[
+			/^[0-9A-Za-z-/_]*$/,
+			'Branch name should only contain latin alphanumeric characters and - / _'
+		],
+		[
+			/^[^A-Z]*$/,
+			'Branch name should not contain any capital letters'
+		]
+	]).each(([regex, message]) => {
+		if (!regex.test(branchName)) {
+			exitCode = -1;
+			logger.error(message);
+		}
+	});
+}
+
+process.exit(exitCode);

@@ -9,6 +9,7 @@
   },
   "bin": {
     "version": "./bin/version",
+    "lint-branch-name": "./bin/lint-branch-name",
     "lint-migrations": "./bin/lint-migrations",
     "less-builder": "./bin/less-builder",
     "changelog": "./bin/changelog",
