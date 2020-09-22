@@ -9,7 +9,7 @@ const branchName = exec('git rev-parse --abbrev-ref HEAD')
 	.replace('\n', '');
 let exitCode = 0;
 
-if (!_(['development', 'master']).contains(branchName)) {
+if (!_(['develop', 'master']).contains(branchName)) {
 	_([
 		[
 			/^(?:feature|fix|experiment)\/.*$/,
